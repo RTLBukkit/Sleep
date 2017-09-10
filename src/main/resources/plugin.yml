@@ -1,6 +1,6 @@
-name: Sleep
-version: @VERSION@
-description: Manages sleep criteria and notifications
+name: ${project.artifactId}
+version: ${project.version}
+description: ${project.description}
 softdepend: [PlayerActivity]
 author: EdGruberman (ed@rjump.com)
 website: http://dev.bukkit.org/server-mods/sleep/

@@ -69,4 +69,4 @@ spam-filter:
   enabled: true
   cooldown: 5 # seconds
   reasons: [ENTER, LEAVE]
-version: @VERSION@
+version: ${project.version}

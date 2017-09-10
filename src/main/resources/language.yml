@@ -47,4 +47,4 @@ common: # not world specific
   unknown-argument: '§f-> §eUnknown§f value for §b§o{1}§7: §f{2}' # 1 = Argument Name, 2 = Argument Value
   requires-argument: '§f-> §cMissing §7required argument: §b§o{1}' # 1 = Argument Name
   reload: '§f-> §2Reloaded §7{1} plugin' # 1 = Plugin Name
-version: @VERSION@
+version: ${project.version}
