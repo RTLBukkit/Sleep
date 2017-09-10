@@ -34,37 +34,18 @@ import edgruberman.bukkit.sleep.util.PluginDependency;
 public final class Main extends CustomPlugin {
 
     public static final long TICKS_PER_SECOND = 20;
-    public static final String LANGUAGE_FILE = "language.yml";
+    static final String LANGUAGE_FILE = "language.yml";
 
     public static ConfigurationCourier courier;
 
     private boolean loaded = false;
     private SupplementManager supplementManager = null;
-    public Somnologist somnologist = null;
+    Somnologist somnologist = null;
 
     @Override
     public void onLoad() {
         this.putConfigMinimum("7.1.0a1");
         this.putConfigMinimum(Main.LANGUAGE_FILE, "7.2.0b4");
-
-        final PluginDependency dependency = new PluginDependency(this, "PlayerActivity", "edgruberman.bukkit.playeractivity", "4.3.0");
-        if (dependency.isValid()) {
-            this.loaded = true;
-            return;
-        }
-
-        // manual intervention required if dependency previously installed and out of date
-        if (dependency.isInstalled()) {
-            this.getLogger().log(Level.SEVERE, "PlayerActivity plugin out of date;  Stop server, delete \"plugins/PlayerActivity.jar\", and then restart server");
-            return;
-        }
-
-        try {
-            dependency.extract();
-        } catch (final Exception e) {
-            this.getLogger().log(Level.SEVERE, "Unable to add PlayerActivity utility jar to class loader; Restart server to enable plugin; " + e);
-            return;
-        }
 
         this.loaded = true;
     }
@@ -116,7 +97,7 @@ public final class Main extends CustomPlugin {
         Main.courier = null;
     }
 
-    public SupplementManager getSupplementManager() {
+    SupplementManager getSupplementManager() {
         if (this.supplementManager == null) this.supplementManager = new SupplementManager(this);
         return this.supplementManager;
     }
