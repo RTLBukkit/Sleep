@@ -68,6 +68,17 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://repo.mattlabs.net/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://repo.mattlabs.net/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
     <!-- Project settings -->
 
     <!-- Enforce Unicode when compiling Java -->
