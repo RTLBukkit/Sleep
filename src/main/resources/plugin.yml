@@ -1,7 +1,7 @@
 name: ${project.artifactId}
 version: ${project.version}
 description: ${project.description}
-softdepend: [PlayerActivity]
+depend: [PlayerActivity]
 author: EdGruberman (ed@rjump.com)
 website: http://dev.bukkit.org/server-mods/sleep/
 main: edgruberman.bukkit.sleep.Main
