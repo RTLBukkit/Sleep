@@ -73,7 +73,7 @@ public final class Daybed extends Supplement {
     private void onRightClickBedInDay(final PlayerInteractEvent interaction) {
         if (!interaction.getPlayer().getWorld().equals(this.state.world)) return;
         if (interaction.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (interaction.getClickedBlock().getType() != Material.BED_BLOCK) return;
+        if (interaction.getClickedBlock().getType() != Material.LEGACY_BED_BLOCK) return;
         if (!this.cb.isDaytime(interaction.getPlayer().getWorld())) return;
 
         // ignore if bed is same as current spawn
@@ -117,7 +117,7 @@ public final class Daybed extends Supplement {
         @EventHandler(priority = EventPriority.MONITOR)
         private void onBreakBed(final BlockBreakEvent broken) {
             if (!broken.getBlock().getWorld().equals(Daybed.this.state.world)) return;
-            if (broken.getBlock().getType() != Material.BED_BLOCK) return;
+            if (broken.getBlock().getType() != Material.LEGACY_BED_BLOCK) return;
 
             // ignore if no bed spawn change was captured
             final CapturedLocation capture = Daybed.this.previous.get(broken.getPlayer().getName());
