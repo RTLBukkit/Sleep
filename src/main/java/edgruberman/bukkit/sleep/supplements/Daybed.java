@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import edgruberman.bukkit.sleep.util.BedLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,7 +28,6 @@ import org.bukkit.scheduler.BukkitTask;
 import edgruberman.bukkit.sleep.Main;
 import edgruberman.bukkit.sleep.State;
 import edgruberman.bukkit.sleep.Supplement;
-import edgruberman.bukkit.sleep.craftbukkit.CraftBukkit;
 import edgruberman.bukkit.sleep.util.CustomLevel;
 
 public final class Daybed extends Supplement {
@@ -37,7 +38,6 @@ public final class Daybed extends Supplement {
 
     private final boolean revert;
     private final long duration;
-    private final CraftBukkit cb;
     private final Map<String, CapturedLocation> previous = new HashMap<String, CapturedLocation>();
     private final Map<String, SpawnCommitter> committers = new HashMap<String, SpawnCommitter>();
     private final Listener reverter;
@@ -46,12 +46,6 @@ public final class Daybed extends Supplement {
         super(implementor, state, config);
         this.revert = config.getBoolean("revert", config.getDefaultSection().getBoolean("revert", Daybed.DEFAULT_REVERT));
         this.duration = Main.parseTime(config.getString("duration"), TimeUnit.MILLISECONDS, Daybed.DEFAULT_DURATION, Daybed.DEFAULT_DURATION_SOURCE);
-
-        try {
-            this.cb = CraftBukkit.create();
-        } catch (final Exception e) {
-            throw new IllegalStateException("Unsupported CraftBukkit version " + Bukkit.getVersion() + "; Check for updates at " + this.implementor.getDescription().getWebsite(), e);
-        }
 
         this.reverter = ( this.revert ? new Reverter(implementor) : null );
 
@@ -74,11 +68,12 @@ public final class Daybed extends Supplement {
         if (!interaction.getPlayer().getWorld().equals(this.state.world)) return;
         if (interaction.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (interaction.getClickedBlock().getType() != Material.LEGACY_BED_BLOCK) return;
-        if (!this.cb.isDaytime(interaction.getPlayer().getWorld())) return;
+        final CraftWorld world = (CraftWorld) interaction.getPlayer().getWorld();
+        if (!world.getHandle().isDay()) return;
 
         // ignore if bed is same as current spawn
         final Block head = Daybed.bedHead(interaction.getClickedBlock());
-        final CapturedLocation previous = new CapturedLocation(this.cb.getBedLocation(interaction.getPlayer()));
+        final CapturedLocation previous = new CapturedLocation(BedLocation.get(interaction.getPlayer()));
         if (head.getLocation().equals(previous.toLocation())) return;
 
         // update spawn to daybed
@@ -133,7 +128,7 @@ public final class Daybed extends Supplement {
 
             // ignore if broken bed is not current daybed spawn
             final Block head = Daybed.bedHead(broken.getBlock());
-            final CapturedLocation previous = new CapturedLocation(Daybed.this.cb.getBedLocation(broken.getPlayer()));
+            final CapturedLocation previous = new CapturedLocation(BedLocation.get(broken.getPlayer()));
             if (!head.getLocation().equals(previous.toLocation())) return;
 
             // revert to previous spawn
@@ -184,7 +179,7 @@ public final class Daybed extends Supplement {
             final Player target = Bukkit.getPlayerExact(this.player);
             if (target == null) return;
 
-            final CapturedLocation current = new CapturedLocation(Daybed.this.cb.getBedLocation(target));
+            final CapturedLocation current = new CapturedLocation(BedLocation.get(target));
             Daybed.this.state.courier.send(target, "daybed.committed"
                     , this.previous.getWorldName(), this.previous.getBlockX(), this.previous.getBlockY(), this.previous.getBlockZ()
                     , current.getWorldName(), current.getBlockX(), current.getBlockY(), current.getBlockZ()

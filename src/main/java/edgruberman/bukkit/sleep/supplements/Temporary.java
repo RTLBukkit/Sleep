@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import edgruberman.bukkit.sleep.util.BedLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,26 +24,18 @@ import org.bukkit.scheduler.BukkitTask;
 import edgruberman.bukkit.sleep.Main;
 import edgruberman.bukkit.sleep.State;
 import edgruberman.bukkit.sleep.Supplement;
-import edgruberman.bukkit.sleep.craftbukkit.CraftBukkit;
 import edgruberman.bukkit.sleep.util.CustomLevel;
 
 /** temporary bed manager */
 public final class Temporary extends Supplement {
 
     private final long duration;
-    private final CraftBukkit cb;
     private final Map<String, CapturedLocation> previous = new HashMap<String, CapturedLocation>();
     private final Map<String, SpawnCommitter> committers = new HashMap<String, SpawnCommitter>();
 
     public Temporary(final Plugin implementor, final State state, final ConfigurationSection config) {
         super(implementor, state ,config);
         this.duration = config.getLong("duration") * Main.TICKS_PER_SECOND;
-
-        try {
-            this.cb = CraftBukkit.create();
-        } catch (final Exception e) {
-            throw new IllegalStateException("Unsupported CraftBukkit version " + Bukkit.getVersion() + "; Check for updates at " + this.implementor.getDescription().getWebsite(), e);
-        }
 
         this.logConfig(MessageFormat.format("Temporary bed duration: {0} seconds", this.duration / Main.TICKS_PER_SECOND));
     }
@@ -61,7 +54,9 @@ public final class Temporary extends Supplement {
     private void onPlayerBedEnter(final PlayerBedEnterEvent event) {
         if (!event.getPlayer().getWorld().equals(this.state.world)) return;
 
-        final Location previous = this.cb.getBedLocation(event.getPlayer());
+        final Location previous = BedLocation.get(event.getPlayer());
+        logConfig("Logging previous Bed location:" + previous);
+        logConfig("Logging event Bed location:" + event.getBed().getLocation());
         if (previous == null) return; // ignore if no previous bed spawn exists
         if (previous.equals(event.getBed().getLocation())) return; // ignore when bed is same as current spawn
 
@@ -109,7 +104,7 @@ public final class Temporary extends Supplement {
         Block head = broken.getBlock();
         final Bed bed = (Bed) broken.getBlock().getState().getData();
         if (!bed.isHeadOfBed()) head = head.getRelative(bed.getFacing());
-        if (!head.getLocation().equals(this.cb.getBedLocation(broken.getPlayer()))) return;
+        if (!head.getLocation().equals(BedLocation.get(broken.getPlayer()))) return;
 
         // revert to previous bed spawn
         broken.getPlayer().setBedSpawnLocation(previous.toLocation());
@@ -156,7 +151,7 @@ public final class Temporary extends Supplement {
             final Player target = Bukkit.getPlayerExact(this.player);
             if (target == null) return;
 
-            final CapturedLocation current = new CapturedLocation(Temporary.this.cb.getBedLocation(target));
+            final CapturedLocation current = new CapturedLocation(BedLocation.get(target));
             Temporary.this.state.courier.send(target, "temporary.committed"
                     , this.previous.getWorldName(), this.previous.getBlockX(), this.previous.getBlockY(), this.previous.getBlockZ()
                     , current.getWorldName(), current.getBlockX(), current.getBlockY(), current.getBlockZ()

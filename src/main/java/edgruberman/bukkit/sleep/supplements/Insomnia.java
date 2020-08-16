@@ -14,7 +14,6 @@ import org.bukkit.plugin.Plugin;
 import edgruberman.bukkit.sleep.Supplement;
 import edgruberman.bukkit.sleep.Reason;
 import edgruberman.bukkit.sleep.State;
-import edgruberman.bukkit.sleep.craftbukkit.CraftBukkit;
 import edgruberman.bukkit.sleep.events.SleepNotify;
 import edgruberman.bukkit.sleep.events.SleepStatus;
 
@@ -25,16 +24,8 @@ public final class Insomnia extends Supplement {
     /** ticks in bed at which Minecraft declares deep sleep which causes morning  */
     private static final long BEFORE_DEEP_SLEEP_TICKS = 100 - 10;
 
-    private final CraftBukkit cb;
-
     public Insomnia(final Plugin implementor, final State state, final ConfigurationSection config) {
         super(implementor, state, config);
-
-        try {
-            this.cb = CraftBukkit.create();
-        } catch (final Exception e) {
-            throw new IllegalStateException("Unsupported CraftBukkit version " + Bukkit.getVersion() + "; Check for updates at " + this.implementor.getDescription().getWebsite(), e);
-        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -85,8 +76,8 @@ public final class Insomnia extends Supplement {
 
             Insomnia.this.implementor.getLogger().log(Level.FINEST, "Insomnia sets in for {0}; Setting spawn point then ejecting from bed...", this.player.getName());
 
-            // eject player from bed before sleep can complete, but set player's spawn point
-            Insomnia.this.cb.wakeUpPlayer(this.player);
+            this.player.wakeup(true);
+
             Insomnia.this.state.courier.send(this.player, "insomnia.eject");
         }
 

@@ -52,12 +52,18 @@
     </repositories>
 
     <dependencies>
-        <!-- For Paper API -->
         <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.15.1-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot</artifactId>
+        <version>1.16.2-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+        </dependency>
+        <dependency>
+        <!-- For Paper API -->
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-api</artifactId>
+        <version>1.16.2-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
         </dependency>
         <!-- For PlayerActivity -->
         <dependency>
